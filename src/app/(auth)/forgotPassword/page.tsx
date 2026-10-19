@@ -35,7 +35,7 @@ export default function ForgotPassword() {
             <Image src="/SPADALOGOMAINPAGE.svg" alt="SPADA logo" width={500} height={500} />
             <CardTitle>Forgot password</CardTitle>
             <CardDescription>
-              Enter your email and we'll send you a reset link
+              Enter your email and we&apos;ll send you a reset link
             </CardDescription>
           </CardHeader>
 

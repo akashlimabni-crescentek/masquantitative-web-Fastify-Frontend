@@ -6,13 +6,14 @@ import { WatchlistToggle } from "./WatchListToggle";
 
 import { BinaryPrice } from "./swaps/binary";
 import { useLivePrice } from "@/stores/usePriceStore";
+import { useMarketSubscription } from "@/providers/priceStreamConnector";
 import { MultiOutcomeBars } from "./swaps/multiOutcome";
 import { getTimeRemaining } from "@/helpers/TimeRemaining";
 
 
 
 export function MarketCard({ market }: { market: Market }) {
-
+    useMarketSubscription(market.canonical_id);
     const livePrices = useLivePrice(market.canonical_id, market.prices);
     const outcomes = market.outcomes ?? [];
 
@@ -44,7 +45,16 @@ export function MarketCard({ market }: { market: Market }) {
           <div className="flex flex-row justify-between">
             <span className="t-label capitalize pr-5">{market.platform}</span>
             <span className="t-label pr-5">{getTimeRemaining(market.close_time)}</span>
-            <span className="n-sm pr-5">${market.volume.toLocaleString("en-us", { maximumFractionDigits: 0 })}</span>
+            <span className="n-sm pr-5">
+              $
+              {(
+                market.outcome_type === "categorical" &&
+                market.event_volume != null &&
+                Number.isFinite(market.event_volume)
+                  ? market.event_volume
+                  : market.volume
+              ).toLocaleString("en-us", { maximumFractionDigits: 0 })}
+            </span>
           </div>
           
         </div>

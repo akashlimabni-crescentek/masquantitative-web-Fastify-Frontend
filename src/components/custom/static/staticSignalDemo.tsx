@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 // Fake chart data — probability % over time
 const POINTS = [
   50, 49, 51, 50, 52, 51, 50, 53, 55, 54, 56, 58, 57, 59, 61,
@@ -85,7 +83,10 @@ export default function SignalDemo() {
   const areaPath = `${path} L ${PAD_LEFT + plotW} ${CHART_H - PAD_BOTTOM} L ${PAD_LEFT} ${CHART_H - PAD_BOTTOM} Z`;
 
   return (
-    <div className="w-full max-w-[440px] bg-card border border-border rounded-lg overflow-hidden">
+    <div
+      className="w-full max-w-[440px] bg-card border border-border rounded-lg overflow-hidden"
+      data-testid="landing-signal-demo"
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-2">
         <span className="t-label">SIGNAL DEMO</span>
@@ -96,9 +97,17 @@ export default function SignalDemo() {
       </div>
 
       {/* Title */}
-      <div className="px-5 pb-4">
+      <div className="px-5 pb-2">
         <span className="t-h3">Will Tesla beat Earnings?</span>
       </div>
+
+      <p
+        className="px-5 pb-3 text-xs text-muted-foreground leading-snug"
+        data-testid="landing-demo-disclosure"
+        role="note"
+      >
+        Illustrative demo — not live market data.
+      </p>
 
       {/* Chart */}
       <div className="px-3">

@@ -6,7 +6,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -70,7 +69,13 @@ export default function Login() {
 
         <Card className="w-70 bg-backgroundhighlight p-4 text-left">
           <CardHeader className="text-center">
-            <Image src="/SPADALOGOMAINPAGE.svg" alt="SPADA logo" width={500} height={500} />
+            <Image
+              src="/SPADALOGOMAINPAGE.svg"
+              alt="SPADA logo"
+              width={500}
+              height={500}
+              priority
+            />
             <CardTitle>Welcome Back</CardTitle>
             <CardDescription>Sign In or Create an Account</CardDescription>
           </CardHeader>
@@ -118,7 +123,7 @@ export default function Login() {
           </form>
 
           <span className="text-center t-body">
-            Don't have an account? <Link className="text-primary" href="/register">Sign Up</Link>
+            Don&apos;t have an account? <Link className="text-primary" href="/register">Sign Up</Link>
           </span>
         </Card>
       </div>

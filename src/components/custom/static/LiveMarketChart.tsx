@@ -32,7 +32,7 @@ function buildInitialSeries(): DataPoint[] {
 
 // Deterministic placeholder used for the very first (server + pre-hydration)
 // render, so server and client output match exactly. Real random data is
-// swapped in after mount via useEffect, once hydration is already complete.
+// swapped in after mount via rAF callback (not sync setState in effect body).
 function buildPlaceholderSeries(): DataPoint[] {
   return Array.from({ length: 42 }, (_, i) => ({ i, value: 40 }));
 }
@@ -42,18 +42,18 @@ type ChartMode = "LINE" | "CANDLE";
 export default function LiveMarketChart() {
   const [mode, setMode] = useState<ChartMode>("LINE");
   const [data, setData] = useState<DataPoint[]>(buildPlaceholderSeries);
+  const [baseline, setBaseline] = useState(40);
   const [flash, setFlash] = useState(false);
   const lastValueRef = useRef<number>(40);
-  const firstValueRef = useRef<number>(40);
 
-  // Swap in the real randomized series only after mount — this runs after
-  // hydration is already complete, so it's treated as a normal state update
-  // rather than something React needs to match against server output.
   useEffect(() => {
-    const initial = buildInitialSeries();
-    setData(initial);
-    lastValueRef.current = initial[initial.length - 1].value;
-    firstValueRef.current = initial[0].value;
+    const id = requestAnimationFrame(() => {
+      const initial = buildInitialSeries();
+      setData(initial);
+      setBaseline(initial[0].value);
+      lastValueRef.current = initial[initial.length - 1].value;
+    });
+    return () => cancelAnimationFrame(id);
   }, []);
 
   useEffect(() => {
@@ -74,13 +74,14 @@ export default function LiveMarketChart() {
 
   const current = data[data.length - 1].value;
   const change = useMemo(
-    () => Math.round((current - firstValueRef.current) * 10) / 10,
-    [current]
+    () => Math.round((current - baseline) * 10) / 10,
+    [current, baseline]
   );
   const isUp = change >= 0;
 
   return (
     <div
+      data-testid="landing-live-chart-demo"
       style={{
         fontFamily:
           "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -94,6 +95,18 @@ export default function LiveMarketChart() {
         boxSizing: "border-box",
       }}
     >
+      <p
+        data-testid="landing-demo-disclosure"
+        role="note"
+        style={{
+          margin: "0 0 14px",
+          fontSize: 12,
+          lineHeight: 1.35,
+          color: "#9aa0a6",
+        }}
+      >
+        Illustrative demo — not live market data.
+      </p>
       {/* Header */}
       <div
         style={{

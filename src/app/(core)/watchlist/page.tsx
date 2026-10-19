@@ -5,10 +5,10 @@ import { MarketCard } from "@/components/custom/markets/MarketCardBase";
 
 export default function Watchlist() {
 
-    const { data, isLoading, error, removeFromWatchlist } = useWatchlist();
+    const { data, isLoading, error } = useWatchlist();
 
     if (isLoading) return <p className="t-body px-5 md:px-20">Loading…</p>;
-    if (error) return <p className="t-body text-negative px-5 md:px-20">Couldn't load your watchlist.</p>;
+    if (error) return <p className="t-body text-negative px-5 md:px-20">Couldn&apos;t load your watchlist.</p>;
 
     if (!data?.watchlist?.length) {
         return (

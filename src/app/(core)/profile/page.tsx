@@ -3,30 +3,31 @@
 import { Card } from "@/components/ui/card"
 import { FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
-export default function profile() {
 
-    const { data: profile, isLoading, error } = useProfile();
+type ProfileDraft = {
+    displayName: string;
+    xHandle: string;
+    avatarUrl: string;
+};
+
+export default function ProfilePage() {
+
+    const { data: profile } = useProfile();
     const { mutate: updateProfile, isPending, isError, isSuccess } = useUpdateProfile();
+    const [draft, setDraft] = useState<ProfileDraft | null>(null);
 
-    useEffect(() => {
-        if (profile) {
-            setDisplayName(profile.display_name ?? "");
-            setXHandle(profile.x_handle ?? "");
-            setAvatarUrl(profile.avatar_url ?? "");
-        }
-    }, [profile]);
+    const displayName = draft?.displayName ?? profile?.display_name ?? "";
+    const xHandle = draft?.xHandle ?? profile?.x_handle ?? "";
+    const avatarUrl = draft?.avatarUrl ?? profile?.avatar_url ?? "";
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         updateProfile({ displayName, xHandle, avatarUrl });
     };
 
-    const [displayName, setDisplayName] = useState("");
-    const [xHandle, setXHandle] = useState("");
-    const [avatarUrl, setAvatarUrl] = useState("");
     return (
         <>
 
@@ -105,7 +106,9 @@ export default function profile() {
                         <Input
                             className="ml-5 max-w-60"
                             value={displayName}
-                            onChange={(e) => setDisplayName(e.target.value)}
+                            onChange={(e) =>
+                                setDraft({ displayName: e.target.value, xHandle, avatarUrl })
+                            }
                         />
                     </FieldGroup>
                     <FieldGroup>
@@ -113,7 +116,9 @@ export default function profile() {
                         <Input
                             className="ml-5 max-w-60"
                             value={xHandle}
-                            onChange={(e) => setXHandle(e.target.value)}
+                            onChange={(e) =>
+                                setDraft({ displayName, xHandle: e.target.value, avatarUrl })
+                            }
                         />
                     </FieldGroup>
                     <FieldGroup>
@@ -121,7 +126,9 @@ export default function profile() {
                         <Input
                             className="ml-5 max-w-60"
                             value={avatarUrl}
-                            onChange={(e) => setAvatarUrl(e.target.value)}
+                            onChange={(e) =>
+                                setDraft({ displayName, xHandle, avatarUrl: e.target.value })
+                            }
                         />
                     </FieldGroup>
 

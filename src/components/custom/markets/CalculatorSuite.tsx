@@ -363,7 +363,7 @@ function OutputRow({ row }: { row: OutputRowData }) {
   );
 }
 
-export default function CalculatorSuite() {
+export default function IdCalculatorSuite() {
   const [modeId, setModeId] = useState("ev");
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Values>(DEFAULTS);

@@ -8,7 +8,6 @@ import StaticPortfolio from "@/components/custom/static/staticPortfolio"
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Sign } from "crypto";
 import Footer from "@/components/custom/nav/footer";
 import { Separator } from "@/components/ui/separator";
 import SpadaLogo from "@/components/custom/static/SpadaLogo";
@@ -145,7 +144,7 @@ export default function Home() {
                 <span className="t-body text-[18px] pt-4 leading-relaxed">
                   Every market shows seven proprietary ratios calculated live from raw
                   order book and trade data. They go far beyond the YES/NO price —
-                  revealing the market's internal health, activity level, and stress
+                  revealing the market&apos;s internal health, activity level, and stress
                   at a glance.
                 </span>
               </div>

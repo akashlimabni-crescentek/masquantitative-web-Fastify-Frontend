@@ -1,10 +1,6 @@
 import {Collapsible,CollapsibleContent,CollapsibleTrigger,} from "@/components/ui/collapsible"
 import {
   Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
 

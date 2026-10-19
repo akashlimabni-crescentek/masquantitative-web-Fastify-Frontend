@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { CardDescription, CardHeader } from "@/components/ui/card";
 import { TriangleAlert } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { SP } from "next/dist/shared/lib/utils";
 
 
 export default function Footer(){

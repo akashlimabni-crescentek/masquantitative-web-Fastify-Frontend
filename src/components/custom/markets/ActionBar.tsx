@@ -13,6 +13,36 @@ function getExternalUrl(market: Market): string {
     return market.market_url;
 }
 
+/**
+ * Genuine Yes/No binary markets only.
+ * Multi-outcome / categorical events often still carry yes_price/no_price from the
+ * first two outcomes — those must not be shown as Yes/No in the action bar.
+ */
+function isBinaryYesNoMarket(market: Market): boolean {
+    if (market.outcome_type === "binary") return true;
+
+    const outcomes = market.outcomes ?? [];
+    if (outcomes.length !== 2) return false;
+
+    const [a, b] = outcomes.map((o) => o.trim().toLowerCase());
+    return (a === "yes" && b === "no") || (a === "no" && b === "yes");
+}
+
+function binaryYesNoPercents(market: Market): { yes: number; no: number } | null {
+    if (!isBinaryYesNoMarket(market)) return null;
+    if (!Number.isFinite(market.yes_price) || !Number.isFinite(market.no_price)) return null;
+    return {
+        yes: Math.round(market.yes_price * 100),
+        no: Math.round(market.no_price * 100),
+    };
+}
+
+function sharePriceSuffix(market: Market): string {
+    const percents = binaryYesNoPercents(market);
+    if (!percents) return "";
+    return ` — Yes ${percents.yes}% / No ${percents.no}%`;
+}
+
 // Draws a 1080x1080 shareable card onto a canvas and returns it as a PNG blob
 async function generateShareImage(market: Market): Promise<Blob> {
     const canvas = document.createElement("canvas");
@@ -60,13 +90,16 @@ async function generateShareImage(market: Market): Promise<Blob> {
     }
     ctx.fillText(line.trim(), 110, y);
 
-    // Yes / No prices — big numbers
-    const priceY = y + 160;
-    ctx.font = "bold 90px monospace";
-    ctx.fillStyle = "#3FCF8E";
-    ctx.fillText(`YES ${Math.round(market.yes_price * 100)}%`, 110, priceY);
-    ctx.fillStyle = "#E5645B";
-    ctx.fillText(`NO ${Math.round(market.no_price * 100)}%`, 110, priceY + 110);
+    // Yes / No prices — only for genuine binary Yes/No markets
+    const percents = binaryYesNoPercents(market);
+    if (percents) {
+        const priceY = y + 160;
+        ctx.font = "bold 90px monospace";
+        ctx.fillStyle = "#3FCF8E";
+        ctx.fillText(`YES ${percents.yes}%`, 110, priceY);
+        ctx.fillStyle = "#E5645B";
+        ctx.fillText(`NO ${percents.no}%`, 110, priceY + 110);
+    }
 
     // Footer — platform + volume
     ctx.fillStyle = "#5D6472";
@@ -87,6 +120,7 @@ export function MarketActionBar({ market }: MarketActionBarProps) {
     const [copied, setCopied] = useState(false);
     const [generating, setGenerating] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const binaryPercents = binaryYesNoPercents(market);
 
     async function handleDownloadImage() {
         setGenerating(true);
@@ -113,7 +147,7 @@ export function MarketActionBar({ market }: MarketActionBarProps) {
                 await navigator.share({
                     files: [file],
                     title: market.title,
-                    text: `${market.title} — Yes ${Math.round(market.yes_price * 100)}% / No ${Math.round(market.no_price * 100)}%`,
+                    text: `${market.title}${sharePriceSuffix(market)}`,
                 });
             } else {
                 // Fallback for browsers without file-sharing support (most desktop browsers)
@@ -132,31 +166,11 @@ export function MarketActionBar({ market }: MarketActionBarProps) {
     }
 
     function handleTwitterShare() {
-        const text = encodeURIComponent(
-            `${market.title} — Yes ${Math.round(market.yes_price * 100)}% / No ${Math.round(market.no_price * 100)}%`
-        );
+        const text = encodeURIComponent(`${market.title}${sharePriceSuffix(market)}`);
         const url = encodeURIComponent(window.location.href);
         window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
     }
 
-
-    function platformStyles(platform: Market["platform"]) {
-        if (platform === "polymarket") {
-            return {
-                border: "border-[#3B5FE3]",
-                text: "text-[#3B5FE3]",
-                hoverBg: "hover:bg-[#3B5FE3]",
-                badgeBg: "bg-[#3B5FE3]",
-            };
-        }
-        // kalshi
-        return {
-            border: "border-[#1DB876]",
-            text: "text-[#1DB876]",
-            hoverBg: "hover:bg-[#1DB876]",
-            badgeBg: "bg-[#1DB876]",
-        };
-    }
 
     return (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-1/2 md:bottom-6 z-40 rounded-xl border border-border bg-sidebar shadow-lg">
@@ -164,8 +178,12 @@ export function MarketActionBar({ market }: MarketActionBarProps) {
                 <div className="flex flex-col min-w-0 flex-1">
                     <span className="t-ui truncate">{market.title}</span>
                     <div className="flex items-center gap-3">
-                        <span className="n-sm text-positive">Yes {Math.round(market.yes_price * 100)}%</span>
-                        <span className="n-sm text-negative">No {Math.round(market.no_price * 100)}%</span>
+                        {binaryPercents ? (
+                            <>
+                                <span className="n-sm text-positive">Yes {binaryPercents.yes}%</span>
+                                <span className="n-sm text-negative">No {binaryPercents.no}%</span>
+                            </>
+                        ) : null}
                         <span className="n-sm text-text-dim">
                             ${market.volume.toLocaleString("en-us", { maximumFractionDigits: 0 })} vol
                         </span>

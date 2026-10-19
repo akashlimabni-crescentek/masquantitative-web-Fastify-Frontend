@@ -14,10 +14,13 @@ export function MultiOutcomeBars({ outcomePrices }: { outcomePrices: OutcomePric
     return <span className="t-meta text-dim">No outcome data.</span>;
   }
 
+
+  console.log("topThree  ==>",topThree);
+
   return (
     <div className="flex flex-col gap-1.5">
       {topThree.map((outcome, i) => (
-        <div key={outcome.name} className="flex items-center gap-2">
+        <div key={`${outcome.name}-${i}`} className="flex items-center gap-2">
           <span className="t-label text-dim truncate w-16 shrink-0">
             {outcome.name}
           </span>

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import CategoryCarousel from "@/components/custom/categorycarousel";
-export default function market() {
+export default function MarketPage() {
 
 
   const PAGE_SIZE = 20;
@@ -27,7 +27,7 @@ export default function market() {
   const [platform, setPlatform] = useState<Platform | undefined>(undefined);
   const [sort, setSort] = useState("volume_desc");
 
-  const { data, isLoading, error, hasNextPage } = useMarkets({
+  const { data, hasNextPage } = useMarkets({
     platform,
     category: category ?? undefined,
     offset: page * PAGE_SIZE,
@@ -49,10 +49,7 @@ export default function market() {
       case "time_desc": return copy.sort((a, b) => new Date(b.close_time).getTime() - new Date(a.close_time).getTime());
       default: return copy;
     }
-  }, [data?.markets, sort]);
-
-
-  console.log("current sort value:", sort);
+  }, [data, sort]);
 
 
 

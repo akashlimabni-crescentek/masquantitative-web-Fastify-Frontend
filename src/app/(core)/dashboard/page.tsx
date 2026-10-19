@@ -14,14 +14,14 @@ import { useMovers } from "@/hooks/dashboard/useMarketMovers";
 import { useMarketMetrics } from "@/hooks/dashboard/useMarketMetrics";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BinaryPrice } from "@/components/custom/markets/swaps/binary";
-import { createClient } from "@/lib/supabase/client";
-import { useEffect} from "react";
 import { getTimeRemaining } from "@/helpers/TimeRemaining";
 
 export default function Dashboard() {
 
 
     const [category, setCategory] = useState<string | null>(null);
+    // Snapshot once per mount so render stays pure (no Date.now() during render).
+    const [nowMs] = useState(() => Date.now());
 
     const { data: newsArticles, isLoading: newsLoading, error: newsError } = useNews(category);
     const { data: marketsData, isLoading: marketsLoading, error: marketsError } = useMarkets({ limit: 8 });
@@ -33,13 +33,6 @@ export default function Dashboard() {
     const [featuredIndex, setFeaturedIndex] = useState(0);
 
     const featuredMarket = moverMarkets?.[featuredIndex];
-
-    useEffect(() => {
-  const supabase = createClient();
-  supabase.auth.getSession().then(({ data }) => {
-    console.log("MY TOKEN:", data.session?.access_token);
-  });
-}, []);
 
 
     //Helper methods for formatting data below
@@ -56,14 +49,20 @@ export default function Dashboard() {
 
     // changes colour of time based on how close to 0.
     function isUrgent(closeTime: string): boolean {
-        const diffMs = new Date(closeTime).getTime() - Date.now();
+        const diffMs = new Date(closeTime).getTime() - nowMs;
         const hours = diffMs / 3_600_000;
         return hours < 24 && hours > 0;
     }
 
 
-    function trendColor(trend: "up" | "down"): string {
-        return trend === "up" ? "text-positive" : "text-negative";
+    function trendColor(trend: "up" | "down" | null | undefined): string {
+        if (trend === "up") return "text-positive";
+        if (trend === "down") return "text-negative";
+        return "text-dim";
+    }
+
+    function formatChange(change: string | null | undefined): string {
+        return change && change.trim() ? change : "—";
     }
 
 
@@ -186,7 +185,7 @@ export default function Dashboard() {
                                         <div className="flex items-baseline justify-between">
                                             <span className="n-stat">{metrics.polymarket_active_count.toLocaleString("en-us")}</span>
                                             <span className={`n-sm font-semibold ${trendColor(metrics.polymarket_trend)}`}>
-                                                {metrics.polymarket_change_24h}
+                                                {formatChange(metrics.polymarket_change_24h)}
                                             </span>
                                         </div>
                                     </div>
@@ -197,7 +196,7 @@ export default function Dashboard() {
                                         <div className="flex items-baseline justify-between">
                                             <span className="n-stat">{metrics.kalshi_active_count.toLocaleString("en-us")}</span>
                                             <span className={`n-sm font-semibold ${trendColor(metrics.kalshi_trend)}`}>
-                                                {metrics.kalshi_change_24h}
+                                                {formatChange(metrics.kalshi_change_24h)}
                                             </span>
                                         </div>
                                     </div>
@@ -208,7 +207,7 @@ export default function Dashboard() {
                                         <div className="flex items-baseline justify-between">
                                             <span className="n-stat">{formatVolume(metrics.total_volume_usd)}</span>
                                             <span className={`n-sm font-semibold ${trendColor(metrics.volume_trend)}`}>
-                                                {metrics.volume_change_24h}
+                                                {formatChange(metrics.volume_change_24h)}
                                             </span>
                                         </div>
                                     </div>

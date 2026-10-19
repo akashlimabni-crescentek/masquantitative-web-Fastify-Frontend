@@ -57,14 +57,15 @@ export  interface HighVolumeMarket {
 export interface MarketMetrics {
   total_active_markets: number;
   polymarket_active_count: number;
-  polymarket_trend: "up" | "down";
-  polymarket_change_24h: string;
+  /** Null until real 24h snapshots exist — never invent. */
+  polymarket_trend: "up" | "down" | null;
+  polymarket_change_24h: string | null;
   kalshi_active_count: number;
-  kalshi_trend: "up" | "down";
-  kalshi_change_24h: string;
+  kalshi_trend: "up" | "down" | null;
+  kalshi_change_24h: string | null;
   total_volume_usd: number;
-  volume_trend: "up" | "down";
-  volume_change_24h: string;
+  volume_trend: "up" | "down" | null;
+  volume_change_24h: string | null;
   last_updated: string;
 }
 

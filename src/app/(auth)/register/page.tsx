@@ -8,11 +8,10 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { FieldGroup, FieldSeparator, FieldLabel, Field } from "@/components/ui/field"
+import { FieldGroup, FieldLabel, Field } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -102,7 +101,7 @@ export default function RegisterPage() {
           {showConfirmMessage ? (
             <CardContent>
               <p className="t-body">
-                We've sent a confirmation link to <strong>{email}</strong>. Click it to activate your account before logging in.
+                We&apos;ve sent a confirmation link to <strong>{email}</strong>. Click it to activate your account before logging in.
               </p>
             </CardContent>
           ) : (

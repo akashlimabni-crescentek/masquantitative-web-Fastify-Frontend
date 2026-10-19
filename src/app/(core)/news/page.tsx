@@ -7,7 +7,6 @@ import { MdNewsCard } from "@/components/custom/news/MdNewsCard";
 import { LgNewsCard } from "@/components/custom/news/LgNewsCard";
 import CategoryCarousel from "@/components/custom/categorycarousel";
 import { useState } from "react";
-import { useOrderBook } from "@/hooks/useOrderBook";
 
 export default function News() {
   

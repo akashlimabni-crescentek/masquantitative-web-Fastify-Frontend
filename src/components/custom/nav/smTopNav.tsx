@@ -1,5 +1,5 @@
 "use client"
-import { Search, Menu, ChevronDown, X, Settings2, Bell, Settings, User2Icon, LogOut } from "lucide-react"
+import { Menu, X, Bell, Settings, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -7,7 +7,7 @@ import Link from "next/link"
 import SpadaLogo from "../static/SpadaLogo";
 import { useProfile } from "@/hooks/useProfile";
 import { useLogout } from "@/hooks/auth/useLogout";
-export default function smTopNav() {
+export default function SmTopNav() {
 
 
 

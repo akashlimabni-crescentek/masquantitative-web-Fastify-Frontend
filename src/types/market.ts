@@ -21,6 +21,9 @@ export interface Market {
   no_price: number;
   implied_probability: number;
   volume: number;
+  /** Event-level volume when available (Kalshi event_ticker sum / Polymarket event). */
+  event_volume?: number | null;
+  event_ticker?: string | null;
   is_active: boolean;
   end_date: string;
   close_time: string;
@@ -45,9 +48,6 @@ export interface MarketsQueryParams {
   category?: string; 
 }
 
-
-
-
-interface MarketResponse {
+export interface MarketResponse {
   market: Market;
 }
